@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <Version>1.0</Version>
+    <Title>PancakeSpreadsheet</Title>
+    <Description>Description of PancakeSpreadsheet</Description>
+    <TargetExt>.gha</TargetExt>
+    <LangVersion>latest</LangVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grasshopper" Version="6.0.18016.23451" IncludeAssets="compile;build" />
+    <PackageReference Include="NPOI" Version="2.5.6" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="License Notice.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="ExtraProvider\CSV\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="ComponentIcons.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ComponentIcons.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="ComponentIcons.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComponentIcons.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <PropertyGroup Condition="$(Configuration) == 'Debug' AND $([MSBuild]::IsOSPlatform(Windows))">
+    <StartProgram>C:\Program Files\Rhino 7\System\Rhino.exe</StartProgram>
+    <StartArguments></StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+
+</Project>
