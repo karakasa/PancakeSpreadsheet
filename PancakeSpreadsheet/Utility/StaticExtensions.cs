@@ -1,4 +1,5 @@
-﻿using Grasshopper.Kernel.Types;
+﻿using Grasshopper.Kernel.Data;
+using Grasshopper.Kernel.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -91,6 +92,23 @@ namespace PancakeSpreadsheet.Utility
             File.Delete(tempFile);
 
             return memoryStream;
+        }
+
+        public static bool IsZeroPath(this GH_Path path)
+        {
+            return path.Indices.All(i => i == 0);
+        }
+
+        public static int FirstNonzeroPath(IList<GH_Path> paths)
+        {
+            for(var i = 0; i < paths.Count; i++)
+            {
+                var path = paths[i];
+                if (!IsZeroPath(path))
+                    return i;
+            }
+
+            return -1;
         }
     }
 }

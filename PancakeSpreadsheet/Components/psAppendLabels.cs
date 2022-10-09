@@ -1,6 +1,9 @@
 ﻿using Grasshopper.Kernel;
+using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Parameters;
+using Grasshopper.Kernel.Types;
 using PancakeSpreadsheet.Params;
+using PancakeSpreadsheet.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +42,84 @@ namespace PancakeSpreadsheet.Components
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            
+            bool rowFirst = true;
+            var listRowLabels = new List<string>();
+            var listColumnLabels = new List<string>();
+
+            DA.GetDataTree<IGH_Goo>(0, out var tree);
+            DA.GetData(1, ref rowFirst);
+            DA.GetDataList(2, listRowLabels);
+            DA.GetDataList(3, listColumnLabels);
+
+            var hasRowLabel = listRowLabels.Count > 0;
+            var hasColLabel = listColumnLabels.Count > 0;
+
+            if (!hasRowLabel && !hasColLabel)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "No labels supplied.");
+                DA.SetDataTree(0, tree);
+                return;
+            }
+
+            if (tree.PathCount == 0)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Input data is empty.");
+                DA.SetDataTree(0, tree);
+                return;
+            }
+
+            tree = tree.Duplicate();
+
+            if (!rowFirst)
+            {
+                StaticExtensions.Swap(ref listRowLabels, ref listColumnLabels);
+            }
+
+            if (hasRowLabel)
+            {
+                var rowLabels = listRowLabels.Select(row => new GH_String(row)).ToArray();
+                var singleZeroPath = new GH_Path(0);
+
+                var paths = tree.Paths;
+                if (tree.PathExists(singleZeroPath))
+                {
+                    var pathIds = paths
+                        .Where(path => path.Indices.Length == 1)
+                        .Select(path => path.Indices[0])
+                        .OrderByDescending(i => i);
+
+                    foreach (var i in pathIds)
+                    {
+                        tree.ReplacePath(new GH_Path(i), new GH_Path(i + 1));
+                    }
+                }
+
+                tree.AppendRange(rowLabels, singleZeroPath);
+            }
+
+            if (hasColLabel)
+            {
+                if (hasRowLabel)
+                    listColumnLabels.Insert(0, string.Empty);
+
+                var index = 0;
+
+                foreach (var list in tree.Branches)
+                {
+                    if (index >= listColumnLabels.Count)
+                    {
+                        list.Insert(0, new GH_String(string.Empty));
+                    }
+                    else
+                    {
+                        list.Insert(0, new GH_String(listColumnLabels[index]));
+                    }
+
+                    ++index;
+                }
+            }
+
+            DA.SetDataTree(0, tree);
         }
     }
 }
