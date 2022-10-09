@@ -15,9 +15,9 @@ namespace PancakeSpreadsheet.Components
           : base(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty)
         {
             CopyFrom(new GH_InstanceDescription(ComponentName,
-                GetType().Name, ComponentDescription, "Spreadsheet", ComponentCategory));
+                ComponentNickname, ComponentDescription, "Spreadsheet", ComponentCategory));
         }
-
+        protected virtual string ComponentNickname => GetType().Name;
         protected abstract string ComponentName { get; }
         protected abstract string ComponentDescription { get; }
         protected abstract string ComponentCategory { get; }

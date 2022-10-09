@@ -21,5 +21,28 @@ namespace PancakeSpreadsheet.NpoiInterop
         {
             return goo.ScriptVariable();
         }
+        public static bool TryGetIndex(IGH_Goo goo, out int index)
+        {
+            switch (goo)
+            {
+                case GH_Integer ghInt:
+                    index = ghInt.Value;
+                    return true;
+                case GH_Number ghNumber:
+                    try
+                    {
+                        index = (int)Math.Round(ghNumber.Value, MidpointRounding.AwayFromZero);
+                        return true;
+                    }
+                    catch
+                    {
+                        index = -1;
+                        return false;
+                    }
+            }
+
+            index = -1;
+            return false;
+        }
     }
 }

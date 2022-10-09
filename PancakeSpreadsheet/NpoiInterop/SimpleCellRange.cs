@@ -29,6 +29,18 @@ namespace PancakeSpreadsheet.NpoiInterop
         {
             return $"{StartCell}:{EndCell}";
         }
+        public void EnsureCapcity(int rowCnt, int colCnt)
+        {
+            if (rowCnt > RowCount)
+            {
+                EndCell = new SimpleCellReference(StartCell.RowId + rowCnt - 1, EndCell.ColumnId);
+            }
+
+            if (colCnt > ColumnCount)
+            {
+                EndCell = new SimpleCellReference(EndCell.RowId, StartCell.ColumnId + colCnt - 1);
+            }
+        }
         public IGH_Goo AsGoo()
         {
             return new GooCellRangeReference { Value = this };

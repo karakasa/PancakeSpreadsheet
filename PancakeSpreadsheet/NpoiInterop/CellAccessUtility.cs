@@ -294,7 +294,7 @@ namespace PancakeSpreadsheet.NpoiInterop
                     return isRow ? cref.Value.RowId : cref.Value.ColumnId;
                 case GooCellRangeReference goo_crange:
                     var crange = goo_crange.Value;
-                    if(!crange.IsValid())
+                    if (!crange.IsValid())
                         throw new ArgumentException(nameof(goo));
                     array = CRangeToIndexes(crange, isRow).ToArray();
                     isArray = true;
@@ -321,6 +321,45 @@ namespace PancakeSpreadsheet.NpoiInterop
             else
             {
                 return Enumerable.Range(crange.StartCell.ColumnId, crange.EndCell.ColumnId - crange.StartCell.ColumnId + 1);
+            }
+        }
+
+        public enum CellDataType
+        {
+            Invalid,
+            CellRef,
+            CellRange
+        }
+        public static CellDataType TryGetCellData(IGH_Goo goo, out SimpleCellReference cref, out SimpleCellRange crange)
+        {
+            crange = default;
+            cref = default;
+
+            try
+            {
+                switch (goo)
+                {
+                    case GH_String ghStr:
+                        var str = ghStr.Value;
+                        if (SimpleCellReference.TryFromString(str, out cref))
+                            return CellDataType.CellRef;
+                        else if (SimpleCellRange.TryFromString(str, out crange))
+                            return CellDataType.CellRange;
+                        else
+                            return CellDataType.Invalid;
+                    case GooCellReference gooCell:
+                        cref = gooCell.Value;
+                        return CellDataType.CellRef;
+                    case GooCellRangeReference gooCellRange:
+                        crange = gooCellRange.Value;
+                        return CellDataType.CellRange;
+                    default:
+                        return CellDataType.Invalid;
+                }
+            }
+            catch
+            {
+                return CellDataType.Invalid;
             }
         }
     }

@@ -16,10 +16,11 @@ using System.Threading.Tasks;
 
 namespace PancakeSpreadsheet.Components
 {
-    public class psSetMultiCells : PancakeComponent
+    public class psSetMultiCellsOld : PancakeComponent
     {
-        public override Guid ComponentGuid => new("{AAEAC8ED-AA25-448A-997A-F4494D03AB88}");
+        public override Guid ComponentGuid => new("{AAEAC8ED-AA25-448A-997A-F4494D03AB95}");
 
+        protected override string ComponentNickname => "psSetMultiCells";
         protected override string ComponentName => "Set Multiple Cells";
 
         protected override string ComponentDescription => "Set the content of a range of cells.";
@@ -32,10 +33,7 @@ namespace PancakeSpreadsheet.Components
             this.AddCellTypeHintValues();
             pManager.AddGenericParameter("Content", "C", "Content to set", GH_ParamAccess.tree);
             pManager.AddBooleanParameter("Row First", "R?", "True for row-first data organization; false for column-first.", GH_ParamAccess.item, true);
-            pManager.AddBooleanParameter("Auto Extend", "E?", AutoExtendParamDesc, GH_ParamAccess.item, true);
         }
-
-        internal const string AutoExtendParamDesc = "True to extend the cell range to ensure all data is written.\r\nFalse to revert to the old behavior, excess data will be truncated.";
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
@@ -48,14 +46,12 @@ namespace PancakeSpreadsheet.Components
             GooCellRangeReference gooReferences = default;
             int option = 0;
             bool rowFirst = true;
-            bool autoExtend = true;
 
             DA.GetData(0, ref gooSheet);
             DA.GetData(1, ref gooReferences);
             DA.GetData(2, ref option);
             DA.GetDataTree<IGH_Goo>(3, out var data);
             DA.GetData(4, ref rowFirst);
-            DA.GetData(5, ref autoExtend);
 
             var sheet = gooSheet?.Value;
 
@@ -81,41 +77,16 @@ namespace PancakeSpreadsheet.Components
                 StaticExtensions.Swap(ref cntFirstLevel, ref cntSecondLevel);
 
             var dataCntFirstLevel = data.PathCount;
-            var dataCntSecondLevel = autoExtend ? data.Branches.Max(branch => branch.Count)
-                : data.Branches.Min(branch => branch.Count);
+            var dataCntSecondLevel = data.Branches.Min(branch => branch.Count);
 
-            if (autoExtend)
+            if (dataCntFirstLevel != cntFirstLevel)
             {
-                if (dataCntFirstLevel > cntFirstLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "First level counts of data mismatch. Range will be extended.");
-                }
-
-                if (dataCntSecondLevel > cntSecondLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Second level counts of data mismatch. Range will be extended.");
-                }
-
-                if (rowFirst)
-                {
-                    crange.EnsureCapcity(dataCntFirstLevel, dataCntSecondLevel);
-                }
-                else
-                {
-                    crange.EnsureCapcity(dataCntSecondLevel, dataCntFirstLevel);
-                }
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "First level counts of data mismatch. Data may be truncated.");
             }
-            else
-            {
-                if (dataCntFirstLevel != cntFirstLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "First level counts of data mismatch. Data may be truncated.");
-                }
 
-                if (dataCntSecondLevel != cntSecondLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Second level counts of data mismatch. Data may be truncated.");
-                }
+            if(dataCntSecondLevel != cntSecondLevel)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Second level counts of data mismatch. Data may be truncated.");
             }
 
             var cellPositions = rowFirst ? crange.EnumerateRowFirst() : crange.EnumerateColumnFirst();
@@ -151,5 +122,7 @@ namespace PancakeSpreadsheet.Components
         }
         protected override string ComponentCategory => PancakeComponent.CategoryCellContent;
         protected override Bitmap Icon => ComponentIcons.SetCellRange;
+        public override GH_Exposure Exposure => GH_Exposure.hidden;
+        public override bool Obsolete => true;
     }
 }

@@ -24,7 +24,7 @@ namespace PancakeSpreadsheet.Components
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {
             pManager.AddGenericParameter("Spreadsheet", "SP", "Spreadsheet object", GH_ParamAccess.item);
-            pManager.AddGenericParameter("Identifier", "I", "Name or index of the sheet", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Identifier", "I", "Name or index (0-based) of the sheet", GH_ParamAccess.item);
         }
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
