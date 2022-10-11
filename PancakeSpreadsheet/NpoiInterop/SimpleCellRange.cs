@@ -25,6 +25,11 @@ namespace PancakeSpreadsheet.NpoiInterop
             StartCell = start;
             EndCell = end;
         }
+        public bool Contains(SimpleCellReference cref)
+        {
+            return cref.RowId >= StartCell.RowId && cref.RowId <= EndCell.RowId
+                && cref.ColumnId >= StartCell.ColumnId && cref.ColumnId <= EndCell.ColumnId;
+        }
         public override string ToString()
         {
             return $"{StartCell}:{EndCell}";

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace PancakeSpreadsheet.NpoiInterop
 {
-    public class WorkbookHolder : IDisposable, IHolder<IWorkbook>
+    public sealed class WorkbookHolder : IDisposable, IHolder<IWorkbook>
     {
         public IGH_Goo AsGoo() => new GooSpreadsheet(this);
         public Stream Stream { get; private set; }
