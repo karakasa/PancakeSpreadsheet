@@ -330,6 +330,16 @@ namespace PancakeSpreadsheet.NpoiInterop
             CellRef,
             CellRange
         }
+        public static SimpleCellReference[] TryGetCellData(IGH_Goo goo)
+        {
+            var state = TryGetCellData(goo, out var cref, out var crange);
+            return state switch
+            {
+                CellDataType.CellRef => new[] { cref },
+                CellDataType.CellRange => crange.Enumerate().ToArray(),
+                _ => null
+            };
+        }
         public static CellDataType TryGetCellData(IGH_Goo goo, out SimpleCellReference cref, out SimpleCellRange crange)
         {
             crange = default;

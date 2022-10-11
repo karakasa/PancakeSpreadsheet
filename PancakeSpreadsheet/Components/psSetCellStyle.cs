@@ -48,20 +48,14 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
-            object gooTarget = null;
+            IGH_Goo gooTarget = null;
             SimpleCellReference[] appliedCells;
 
             DA.GetData(1, ref gooTarget);
 
-            if (gooTarget is GooCellReference cref)
-            {
-                appliedCells = new[] { cref.Value };
-            }
-            else if (gooTarget is GooCellRangeReference crange)
-            {
-                appliedCells = crange.Value.Enumerate().ToArray();
-            }
-            else
+            appliedCells = CellAccessUtility.TryGetCellData(gooTarget);
+
+            if (appliedCells is null || appliedCells.Length == 0)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Input must be a cell reference or a cell range reference");
                 return;
