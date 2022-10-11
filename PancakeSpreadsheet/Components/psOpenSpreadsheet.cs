@@ -64,6 +64,9 @@ namespace PancakeSpreadsheet.Components
             if (!ok)
                 return;
 
+            if (!string.IsNullOrEmpty(password))
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Be advised that password support is incomplete. You may run into issues.");
+
             if (openMode == 1)
             {
                 WorkbookFactory.SetImportOption(ImportOption.SheetContentOnly);
@@ -73,71 +76,17 @@ namespace PancakeSpreadsheet.Components
                 WorkbookFactory.SetImportOption(ImportOption.All);
             }
 
-            if (!File.Exists(filepath))
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "File not found.");
+            if (!Features.ValidateFile(filepath, out var fileLength))
                 return;
-            }
 
-            var extension = Path.GetExtension(filepath).ToLowerInvariant();
-            switch (extension)
+            var stream = Features.PrepareFileStream(filepath, fileLength);
+
+            var holder = Features.OpenWorkbook(stream, password);
+            if(holder is not null)
             {
-                case ".csv":
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "CSV file is unsupported. Use Pancake for CSV import & export.");
-                    return;
-                case ".xlsb":
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "XLSB file is unsupported.");
-                    return;
-            }
-
-            var fileLength = new FileInfo(filepath).Length;
-            if (fileLength < 32)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Empty file.");
-                return;
-            }
-
-            const long InPlaceFileSizeThreshold = 1L * 1024 * 1024 * 1024; // 1GB
-
-            Stream stream;
-
-            if (fileLength > InPlaceFileSizeThreshold)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "File is too large. Pancake will open the file in-place. This may cause issues.");
-                stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            }
-            else
-            {
-                stream = new MemoryStream((int)fileLength);
-                using var fileStream = StaticExtensions.OpenFile(filepath);
-
-                fileStream.CopyTo(stream);
-            }
-
-            if (!string.IsNullOrEmpty(password))
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Be advised that password support is incomplete. You may run into issues.");
-            }
-
-            try
-            {
-                var holder = WorkbookHolder.Create(stream, password);
-
                 MonitorResource(holder);
-
                 DA.SetData(0, holder.AsGoo());
-            }
-            catch (NotSupportedException nsEx)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, nsEx.Message);
-                return;
-            }
-            catch (IOException ioEx)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, ioEx.InnerException?.Message ?? ioEx.Message);
-                return;
-            }
-            
+            }            
         }
 
         /// <summary>

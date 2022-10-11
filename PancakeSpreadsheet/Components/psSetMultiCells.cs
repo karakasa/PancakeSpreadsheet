@@ -71,81 +71,10 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
+            var hint = CellAccessUtility.GetHint(option);
             var crange = gooReferences.Value;
 
-            // TODO: Boundary Check
-            var cntFirstLevel = crange.RowCount;
-            var cntSecondLevel = crange.ColumnCount;
-
-            if (!rowFirst)
-                StaticExtensions.Swap(ref cntFirstLevel, ref cntSecondLevel);
-
-            var dataCntFirstLevel = data.PathCount;
-            var dataCntSecondLevel = autoExtend ? data.Branches.Max(branch => branch.Count)
-                : data.Branches.Min(branch => branch.Count);
-
-            if (autoExtend)
-            {
-                if (dataCntFirstLevel > cntFirstLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "First level counts of data mismatch. Range will be extended.");
-                }
-
-                if (dataCntSecondLevel > cntSecondLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Second level counts of data mismatch. Range will be extended.");
-                }
-
-                if (rowFirst)
-                {
-                    crange.EnsureCapcity(dataCntFirstLevel, dataCntSecondLevel);
-                }
-                else
-                {
-                    crange.EnsureCapcity(dataCntSecondLevel, dataCntFirstLevel);
-                }
-            }
-            else
-            {
-                if (dataCntFirstLevel != cntFirstLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "First level counts of data mismatch. Data may be truncated.");
-                }
-
-                if (dataCntSecondLevel != cntSecondLevel)
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Second level counts of data mismatch. Data may be truncated.");
-                }
-            }
-
-            var cellPositions = rowFirst ? crange.EnumerateRowFirst() : crange.EnumerateColumnFirst();
-
-            var hint = CellAccessUtility.GetHint(option);
-
-            using var dataEnumerator = data.Branches.GetEnumerator();
-
-            foreach (var branch in cellPositions)
-            {
-                if (!dataEnumerator.MoveNext())
-                    break;
-
-                var curList = dataEnumerator.Current;
-                var index = 0;
-
-                foreach (var cref in branch)
-                {
-                    if (index >= curList.Count)
-                        break;
-
-                    var cell = sheet.EnsureCell(cref.RowId, cref.ColumnId);
-                    if (!CellAccessUtility.TrySetCellContent(cell, hint, curList[index]))
-                    {
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Cannot set the content of cell {cref}. Skipped.");
-                    }
-
-                    ++index;
-                }
-            }
+            Features.ActualWriteData(sheet, crange, rowFirst, data, autoExtend, hint);
 
             DA.SetData(0, gooSheet);
         }

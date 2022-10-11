@@ -74,35 +74,7 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
-            if (!overwrite && File.Exists(filepath))
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "The destination file already exists.");
-                return;
-            }
-
-            if (overwrite && File.Exists(filepath))
-            {
-                try
-                {
-                    File.Delete(filepath);
-                }
-                catch
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Fail to delete the destination file. It may be opened already by another software.");
-                    return;
-                }
-            }
-
-            if (holder.IsFileBased && filepath.Equals(holder.BackendFile, StringComparison.InvariantCultureIgnoreCase))
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "You cannot overwrite the original file, because the file is opened in-place.");
-                return;
-            }
-
-            BaseFormulaEvaluator.EvaluateAllFormulaCells(wb);
-
-            using var fs = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-            wb.Write(fs);
+            Features.WriteToFile(filepath, holder, overwrite);
         }
         protected override string ComponentCategory => PancakeComponent.CategorySpreadsheet;
         protected override Bitmap Icon => ComponentIcons.SaveFile;

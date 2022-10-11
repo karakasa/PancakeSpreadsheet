@@ -42,26 +42,8 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
-            var firstRowIndex = sheet.FirstRowNum;
-            var lastRowIndex = sheet.LastRowNum;
+            var crange = Features.GetSheetRange(sheet);
 
-            var firstColIndex = int.MaxValue;
-            var lastColIndex = int.MinValue;
-
-            for (var rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++)
-            {
-                var row = sheet.GetRow(rowIndex);
-                if (row is null)
-                    continue;
-
-                if (row.FirstCellNum < firstColIndex)
-                    firstColIndex = row.FirstCellNum;
-
-                if (row.LastCellNum - 1 > lastColIndex)
-                    lastColIndex = row.LastCellNum - 1;
-            }
-
-            var crange = new SimpleCellRange(new(firstRowIndex, firstColIndex), new(lastRowIndex, lastColIndex));
             DA.SetData(0, crange.AsGoo());
         }
         protected override string ComponentCategory => PancakeComponent.CategorySheet;

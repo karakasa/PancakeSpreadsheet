@@ -8,6 +8,8 @@ namespace PancakeSpreadsheet.Components
 {
     public abstract class PancakeComponent : GH_Component
     {
+        private FeaturePack _features;
+        internal FeaturePack Features => _features ??= new(this);
         /// <summary>
         /// Initializes a new instance of the PancakeComponent class.
         /// </summary>

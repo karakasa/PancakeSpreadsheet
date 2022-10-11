@@ -1,9 +1,16 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Parameters;
+using Grasshopper.Kernel.Types;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using PancakeSpreadsheet.NpoiInterop;
 using PancakeSpreadsheet.Params;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,7 +49,106 @@ namespace PancakeSpreadsheet.Components
 
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            throw new NotImplementedException();
+            string filepath = default;
+            IGH_Goo sheetId = default;
+            GooCellReference writePosition = default;
+            bool rowFirst = true;
+            bool resizeCol = true;
+            bool createNew = false;
+            bool ok = default;
+
+            DA.GetData(0, ref filepath);
+            DA.GetData(1, ref sheetId);
+            DA.GetData(2, ref writePosition);
+            DA.GetDataTree<IGH_Goo>(3, out var dataTree);
+            DA.GetData(4, ref rowFirst);
+            DA.GetData(5, ref resizeCol);
+            DA.GetData(6, ref createNew);
+            DA.GetData(7, ref ok);
+
+            if (!ok)
+                return;
+
+            var position = writePosition == null ? new SimpleCellReference(0, 0) : writePosition.Value;
+
+            if (!Features.ValidateFile(filepath, out _, true))
+                return;
+
+            var isOOXMLFormat = !Path.GetExtension(filepath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+
+            if (createNew && File.Exists(filepath))
+            {
+                try
+                {
+                    File.Delete(filepath);
+                    if (File.Exists(filepath))
+                        throw new IOException();
+                }
+                catch
+                {
+                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Fail to erase the existing file.");
+                    return;
+                }
+            }
+
+            WorkbookHolder holder;
+
+            var useExistingFile = false;
+
+            if (File.Exists(filepath))
+            {
+                var stream = Features.PrepareMemoryStream(filepath);
+                holder = Features.OpenWorkbook(stream, string.Empty);
+                useExistingFile = true;
+            }
+            else
+            {
+                IWorkbook wb = isOOXMLFormat ? new XSSFWorkbook() : new HSSFWorkbook();
+                holder = WorkbookHolder.Create(null, wb);
+            }
+
+            if (holder is null)
+                return;
+
+            const string DEFAULT_SHEET_NAME = "Sheet1";
+
+            try
+            {
+                ISheet sheet = null;
+
+                var state = ConversionUtility.TryGetIndexOrName(sheetId, out var index, out var name);
+
+                if (useExistingFile)
+                    sheet = Features.GetSheetByIdentifier(holder, sheetId);
+
+                if (sheet is null)
+                {
+                    switch (state)
+                    {
+                        case IndexNameState.Name when !string.IsNullOrEmpty(name):
+                            sheet = holder.Workbook.CreateSheet(name);
+                            break;
+                        case IndexNameState.Index:
+                            AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Unable to create a sheet with specific index. Revert to the default sheet name.");
+                            sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
+                            break;
+                        default:
+                            AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid sheet identifier");
+                            return;
+                    }
+                }
+
+                Features.ActualWriteData(sheet, new SimpleCellRange(position), rowFirst, dataTree, true, CellTypeHint.Automatic);
+
+                if (resizeCol)
+                    Features.ResizeAll(sheet);
+
+                Features.WriteToFile(filepath, holder, true);
+            }
+            finally
+            {
+                holder?.Dispose();
+            }
         }
     }
 }

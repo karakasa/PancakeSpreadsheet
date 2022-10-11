@@ -1,6 +1,7 @@
 ﻿using Grasshopper.Kernel;
 using Grasshopper.Kernel.Types;
 using NPOI.SS.UserModel;
+using Org.BouncyCastle.Asn1.X509;
 using PancakeSpreadsheet.NpoiInterop;
 using PancakeSpreadsheet.Params;
 using System;
@@ -38,71 +39,24 @@ namespace PancakeSpreadsheet.Components
 
             DA.GetData(0, ref goo);
 
-            var wb = goo?.Value?.Workbook;
+            var holder = goo?.Value;
 
-            if (wb is null)
+            if (holder is null)
             {
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid spreadsheet.");
                 return;
             }
 
-            object idObj = default;
+            IGH_Goo sheetId = default;
+            DA.GetData(1, ref sheetId);
 
-            DA.GetData(1, ref idObj);
-
-            ISheet sheet;
-
-            switch (idObj)
+            var sheet = Features.GetSheetByIdentifier(holder, sheetId);
+            if (sheet is null)
             {
-                case GH_Number number:
-                    try
-                    {
-                        sheet = wb.GetSheetAt((int)number.Value);
-                    }
-                    catch
-                    {
-                        sheet = null;
-                    }
-
-                    if (sheet is null)
-                    {
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, $"Sheet index {number.Value} is invalid.");
-                        return;
-                    }
-
-                    break;
-                case GH_Integer index:
-                    try
-                    {
-                        sheet = wb.GetSheetAt(index.Value);
-                    }
-                    catch
-                    {
-                        sheet = null;
-                    }
-
-                    if (sheet is null)
-                    {
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, $"Sheet index {index.Value} is invalid.");
-                        return;
-                    }
-
-                    break;
-                case GH_String name:
-
-                    sheet = wb.GetSheet(name.Value);
-
-                    if (sheet is null)
-                    {
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Error, $"Sheet {name.Value} doesn't exist.");
-                        return;
-                    }
-
-                    break;
-                default:
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Unknown identifier. Must be an integer or text");
-                    return;
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Cannot find the specific sheet.");
+                return;
             }
+
 
             DA.SetData(0, sheet.AsGoo());
         }

@@ -47,42 +47,9 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
-            ResizeAll(sheet);
+            Features.ResizeAll(sheet);
 
             DA.SetData(0, gooSheet);
-        }
-
-        internal static void ResizeAll(ISheet sheet)
-        {
-            var firstRowIndex = sheet.FirstRowNum;
-            var lastRowIndex = sheet.LastRowNum;
-
-            var firstColIndex = int.MaxValue;
-            var lastColIndex = int.MinValue;
-
-            for (var rowIndex = firstRowIndex; rowIndex <= lastRowIndex; rowIndex++)
-            {
-                var row = sheet.GetRow(rowIndex);
-                if (row is null)
-                    continue;
-
-                if (row.FirstCellNum < firstColIndex)
-                    firstColIndex = row.FirstCellNum;
-
-                if (row.LastCellNum - 1 > lastColIndex)
-                    lastColIndex = row.LastCellNum - 1;
-            }
-
-            for (var colIndex = firstColIndex; colIndex <= lastColIndex; colIndex++)
-            {
-                try
-                {
-                    sheet.AutoSizeColumn(colIndex);
-                }
-                catch
-                {
-                }
-            }
         }
 
         // protected override Bitmap Icon => ComponentIcons.AdjustColumnWidth;

@@ -31,6 +31,7 @@ namespace PancakeSpreadsheet.NpoiInterop
             return holder;
         }
 
+        public static WorkbookHolder Create(IWorkbook wb) => Create(null, wb);
         public void Dispose()
         {
             Stream?.Dispose();

@@ -31,6 +31,8 @@ namespace PancakeSpreadsheet.Components
             pManager.AddIntegerParameter("Type", "T", "Cell type for content retrieval\r\nRight-click for more options.", GH_ParamAccess.item, 0);
             this.AddCellTypeHintValues();
             pManager.AddBooleanParameter("Row First", "R?", "True for row-first data organization; false for column-first.", GH_ParamAccess.item, true);
+
+            Params.Input[1].Optional = true;
         }
 
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
@@ -58,54 +60,21 @@ namespace PancakeSpreadsheet.Components
                 return;
             }
 
+            SimpleCellRange crange;
+
             if (gooReferences is null || !gooReferences.Value.IsValid())
             {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid cell range reference.");
-                return;
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Cell range is omitted. Read the entire sheet by default.");
+                crange = Features.GetSheetRange(sheet);
             }
-
-            var crange = gooReferences.Value;
-
-            var cellPositions = rowFirst ? crange.EnumerateRowFirst() : crange.EnumerateColumnFirst();
+            else
+            {
+                crange = gooReferences.Value;
+            }
 
             var hint = CellAccessUtility.GetHint(option);
 
-            var tree = new GH_Structure<IGH_Goo>();
-            var id = 0;
-            foreach (var branch in cellPositions)
-            {
-                var list = new List<IGH_Goo>();
-
-                foreach (var cref in branch)
-                {
-                    try
-                    {
-                        object content;
-
-                        var cell = sheet.GetRow(cref.RowId)?.GetCell(cref.ColumnId);
-                        if (cell is null)
-                        {
-                            content = null;
-                        }
-                        else
-                        {
-                            if (!CellAccessUtility.TryGetCellContent(cell, hint, out content))
-                                content = null;
-                        }
-
-                        list.Add(GH_Convert.ToGoo(content));
-                    }
-                    catch (Exception ex)
-                    {
-                        AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Failed to access {cref}. Replaced with null.");
-                        list.Add(null);
-                    }
-                }
-
-                tree.EnsurePath(id).AddRange(list);
-                ++id;
-            }
-
+            var tree = Features.ActualReadData(sheet, crange, rowFirst, hint);
             DA.SetDataTree(0, tree);
         }
         protected override Bitmap Icon => ComponentIcons.GetCellRange;

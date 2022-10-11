@@ -25,6 +25,10 @@ namespace PancakeSpreadsheet.NpoiInterop
             StartCell = start;
             EndCell = end;
         }
+
+        public SimpleCellRange(SimpleCellReference singleton) : this(singleton, singleton)
+        {
+        }
         public bool Contains(SimpleCellReference cref)
         {
             return cref.RowId >= StartCell.RowId && cref.RowId <= EndCell.RowId
