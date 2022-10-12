@@ -220,6 +220,9 @@
   <data name="SimpleWrite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Icons\IconsDesign_spreadsheet-36.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SimpleWriteList" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\IconsDesign_spreadsheet-37.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="UnmergeCell" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Icons\IconsDesign-29.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

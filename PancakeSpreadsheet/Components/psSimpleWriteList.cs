@@ -122,6 +122,6 @@ namespace PancakeSpreadsheet.Components
                 holder?.Dispose();
             }
         }
-        protected override Bitmap Icon => ComponentIcons.SimpleWrite;
+        protected override Bitmap Icon => ComponentIcons.SimpleWriteList;
     }
 }
