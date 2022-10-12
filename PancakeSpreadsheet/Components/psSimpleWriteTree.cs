@@ -17,13 +17,13 @@ using System.Threading.Tasks;
 
 namespace PancakeSpreadsheet.Components
 {
-    public class psSimpleWrite : PancakeComponent
+    public class psSimpleWriteTree : PancakeComponent
     {
         public override Guid ComponentGuid => new("{7F7652DF-0286-4F77-ADDF-F4F734D3D297}");
 
-        protected override string ComponentName => "Simple Write XLS";
+        protected override string ComponentName => "Simple Write Tree to XLS";
 
-        protected override string ComponentDescription => "One unified component to write a simple xls(x) file.";
+        protected override string ComponentDescription => "One unified component to write a datatree to a xls(x) file.";
 
         protected override string ComponentCategory => PancakeComponent.CategorySpreadsheet;
         public override GH_Exposure Exposure => GH_Exposure.tertiary;
@@ -37,6 +37,7 @@ namespace PancakeSpreadsheet.Components
             pManager.AddBooleanParameter("Row first?", "R?", "Whether to format the data as row-first or column-first. By default row-first, that is, one branch per row.", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Resize Column?", "RC?", "Resize all columns to fit content. By default true.", GH_ParamAccess.item, true);
             pManager.AddBooleanParameter("Create New?", "CN?", "If the output file exists, true to delete the file first, false to write onto the original file.", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Ignore Null?", "IN?", "Nulls in the datatree are skipped when written to an existing file.", GH_ParamAccess.item, false);
             pManager.AddBooleanParameter("OK", "OK", "OK to write", GH_ParamAccess.item, false);
 
             Params.Input[1].Optional = true;
@@ -56,6 +57,7 @@ namespace PancakeSpreadsheet.Components
             bool rowFirst = true;
             bool resizeCol = true;
             bool createNew = false;
+            bool ignoreNull = false;
             bool ok = default;
 
             DA.GetData(0, ref filepath);
@@ -65,7 +67,8 @@ namespace PancakeSpreadsheet.Components
             DA.GetData(4, ref rowFirst);
             DA.GetData(5, ref resizeCol);
             DA.GetData(6, ref createNew);
-            DA.GetData(7, ref ok);
+            DA.GetData(7, ref ignoreNull);
+            DA.GetData(8, ref ok);
 
             if (!ok)
                 return;
@@ -75,80 +78,18 @@ namespace PancakeSpreadsheet.Components
             if (!Features.ValidateFile(filepath, out _, true))
                 return;
 
-            var isOOXMLFormat = !Path.GetExtension(filepath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
-
-            if (createNew && File.Exists(filepath))
-            {
-                try
-                {
-                    File.Delete(filepath);
-                    if (File.Exists(filepath))
-                        throw new IOException();
-                }
-                catch
-                {
-                    AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Fail to erase the existing file.");
-                    return;
-                }
-            }
-
-            WorkbookHolder holder;
-
-            var useExistingFile = false;
-
-            if (File.Exists(filepath))
-            {
-                var stream = Features.PrepareMemoryStream(filepath);
-                holder = Features.OpenWorkbook(stream, string.Empty);
-                useExistingFile = true;
-            }
-            else
-            {
-                IWorkbook wb = isOOXMLFormat ? new XSSFWorkbook() : new HSSFWorkbook();
-                holder = WorkbookHolder.Create(null, wb);
-            }
+            var holder = Features.OpenOrCreateFile(filepath, createNew, out var useExistingFile);
 
             if (holder is null)
                 return;
 
-            const string DEFAULT_SHEET_NAME = "Sheet1";
-
             try
             {
-                ISheet sheet = null;
-
-                var state = ConversionUtility.TryGetIndexOrName(sheetId, out var index, out var name);
-
-                if (useExistingFile)
-                    sheet = Features.GetSheetByIdentifier(holder, sheetId);
-
+                var sheet = Features.OpenOrCreateSheet(holder, sheetId, useExistingFile);
                 if (sheet is null)
-                {
-                    switch (state)
-                    {
-                        case IndexNameState.Name when !string.IsNullOrEmpty(name):
-                            sheet = holder.Workbook.CreateSheet(name);
-                            break;
-                        case IndexNameState.Index:
-                            AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Unable to create a sheet with specific index. Revert to the default sheet name.");
-                            sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
-                            break;
-                        default:
-                            if (sheetId is null)
-                            {
-                                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "A default sheet name is used.");
-                                sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
-                            }
-                            else
-                            {
-                                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid sheet identifier");
-                                return;
-                            }
-                            break;
-                    }
-                }
+                    return;
 
-                Features.ActualWriteData(sheet, new SimpleCellRange(position), rowFirst, dataTree, true, CellTypeHint.Automatic);
+                Features.ActualWriteData(sheet, new SimpleCellRange(position), rowFirst, dataTree, true, CellTypeHint.Automatic, ignoreNull);
 
                 if (resizeCol)
                     Features.ResizeAll(sheet);

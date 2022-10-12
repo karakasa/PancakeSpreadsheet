@@ -16,6 +16,9 @@ using NPOI.SS.Formula;
 using static ICSharpCode.SharpZipLib.Zip.FastZip;
 using System.Runtime.InteropServices.WindowsRuntime;
 using NPOI.POIFS.Crypt.Dsig;
+using NPOI.HSSF.UserModel;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 
 namespace PancakeSpreadsheet.Components
 {
@@ -245,6 +248,83 @@ namespace PancakeSpreadsheet.Components
 
             return stream;
         }
+        public WorkbookHolder OpenOrCreateFile(string filepath, bool alwaysCreateNew, out bool useExistingFile)
+        {
+            var isOOXMLFormat = !Path.GetExtension(filepath).Equals(".xls", StringComparison.OrdinalIgnoreCase);
+
+            if (alwaysCreateNew && File.Exists(filepath))
+            {
+                try
+                {
+                    File.Delete(filepath);
+                    if (File.Exists(filepath))
+                        throw new IOException();
+                }
+                catch
+                {
+                    _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Fail to erase the existing file.");
+                    useExistingFile = false;
+                    return null;
+                }
+            }
+
+            WorkbookHolder holder;
+
+            useExistingFile = false;
+
+            if (File.Exists(filepath))
+            {
+                var stream = PrepareMemoryStream(filepath);
+                holder = OpenWorkbook(stream, string.Empty);
+                useExistingFile = true;
+            }
+            else
+            {
+                IWorkbook wb = isOOXMLFormat ? new XSSFWorkbook() : new HSSFWorkbook();
+                holder = WorkbookHolder.Create(null, wb);
+            }
+
+            return holder;
+        }
+        public ISheet OpenOrCreateSheet(WorkbookHolder holder, IGH_Goo sheetId, bool useExistingFile)
+        {
+            const string DEFAULT_SHEET_NAME = "Sheet1";
+
+            ISheet sheet = null;
+
+            var state = ConversionUtility.TryGetIndexOrName(sheetId, out var index, out var name);
+
+            if (useExistingFile)
+                sheet = GetSheetByIdentifier(holder, sheetId);
+
+            if (sheet is null)
+            {
+                switch (state)
+                {
+                    case IndexNameState.Name when !string.IsNullOrEmpty(name):
+                        sheet = holder.Workbook.CreateSheet(name);
+                        break;
+                    case IndexNameState.Index:
+                        _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Unable to create a sheet with specific index. Revert to the default sheet name.");
+                        sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
+                        break;
+                    default:
+                        if (sheetId is null)
+                        {
+                            _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "A default sheet name is used.");
+                            sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
+                        }
+                        else
+                        {
+                            _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid sheet identifier");
+                            return null;
+                        }
+                        break;
+                }
+            }
+
+            return sheet;
+        }
         public bool ValidateFile(string filepath, out long fileLength, bool forWrite = false)
         {
             fileLength = 0;
@@ -285,7 +365,8 @@ namespace PancakeSpreadsheet.Components
             bool rowFirst,
             GH_Structure<IGH_Goo> data,
             bool autoExtend,
-            CellTypeHint hint
+            CellTypeHint hint,
+            bool ignoreNull = false
             )
         {
             var cntFirstLevel = crange.RowCount;
@@ -349,13 +430,44 @@ namespace PancakeSpreadsheet.Components
                     if (index >= curList.Count)
                         break;
 
-                    var cell = sheet.EnsureCell(cref.RowId, cref.ColumnId);
-                    if (!CellAccessUtility.TrySetCellContent(cell, hint, curList[index]))
+                    var cellData = curList[index];
+
+                    if (!(cellData is null && ignoreNull))
                     {
-                        _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Cannot set the content of cell {cref}. Skipped.");
+                        var cell = sheet.EnsureCell(cref.RowId, cref.ColumnId);
+                        if (!CellAccessUtility.TrySetCellContent(cell, hint, cellData))
+                        {
+                            _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Cannot set the content of cell {cref}. Skipped.");
+                        }
                     }
 
                     ++index;
+                }
+            }
+        }
+        public void ActualWriteData(
+            ISheet sheet,
+            List<SimpleCellReference> crefs,
+            List<IGH_Goo> data,
+            CellTypeHint hint,
+            bool ignoreNull = false
+            )
+        {
+            if (crefs.Count != data.Count)
+                throw new InvalidOperationException("Cell reference and data must have same length.");
+
+            for (var i = 0; i < crefs.Count; i++)
+            {
+                var cellData = data[i];
+                var cref = crefs[i];
+
+                if (cellData is null && ignoreNull)
+                    continue;
+
+                var cell = sheet.EnsureCell(cref.RowId, cref.ColumnId);
+                if (!CellAccessUtility.TrySetCellContent(cell, hint, cellData))
+                {
+                    _docObj.AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, $"Cannot set the content of cell {cref}. Skipped.");
                 }
             }
         }

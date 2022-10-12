@@ -25,7 +25,7 @@ namespace PancakeSpreadsheet.Components
 
         protected override string ComponentName => "Simple Read XLS";
 
-        protected override string ComponentDescription => "One unified component to read a simple xls(x) file.";
+        protected override string ComponentDescription => "One unified component to read a xls(x) file.";
 
         protected override string ComponentCategory => PancakeComponent.CategorySpreadsheet;
         public override GH_Exposure Exposure => GH_Exposure.tertiary;
