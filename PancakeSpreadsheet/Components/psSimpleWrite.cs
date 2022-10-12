@@ -8,6 +8,7 @@ using PancakeSpreadsheet.NpoiInterop;
 using PancakeSpreadsheet.Params;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Principal;
@@ -20,7 +21,7 @@ namespace PancakeSpreadsheet.Components
     {
         public override Guid ComponentGuid => new("{7F7652DF-0286-4F77-ADDF-F4F734D3D297}");
 
-        protected override string ComponentName => "Simple Write";
+        protected override string ComponentName => "Simple Write XLS";
 
         protected override string ComponentDescription => "One unified component to write a simple xls(x) file.";
 
@@ -150,5 +151,6 @@ namespace PancakeSpreadsheet.Components
                 holder?.Dispose();
             }
         }
+        protected override Bitmap Icon => ComponentIcons.SimpleWrite;
     }
 }

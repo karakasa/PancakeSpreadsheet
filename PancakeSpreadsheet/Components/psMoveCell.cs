@@ -4,17 +4,18 @@ using PancakeSpreadsheet.NpoiInterop;
 using PancakeSpreadsheet.Params;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PancakeSpreadsheet.Components
 {
-    public class psMoveCref : PancakeComponent
+    public class psMoveCell : PancakeComponent
     {
         public override Guid ComponentGuid => new("{8110A674-1B1A-47F1-8B33-11C840AADE2A}");
 
-        protected override string ComponentName => "Move Cell Reference";
+        protected override string ComponentName => "Move Cell Area";
 
         protected override string ComponentDescription => "Move a cell or cell range reference according to row/column offsets.";
 
@@ -110,6 +111,7 @@ namespace PancakeSpreadsheet.Components
             return cell;
         }
         public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override Bitmap Icon => ComponentIcons.MoveCells;
     }
 }
 

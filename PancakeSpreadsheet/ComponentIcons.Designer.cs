@@ -63,6 +63,16 @@ namespace PancakeSpreadsheet {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AddLabels {
+            get {
+                object obj = ResourceManager.GetObject("AddLabels", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap AdjustColumnWidth {
             get {
                 object obj = ResourceManager.GetObject("AdjustColumnWidth", resourceCulture);
@@ -233,6 +243,16 @@ namespace PancakeSpreadsheet {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap MoveCells {
+            get {
+                object obj = ResourceManager.GetObject("MoveCells", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap NewFile {
             get {
                 object obj = ResourceManager.GetObject("NewFile", resourceCulture);
@@ -276,6 +296,16 @@ namespace PancakeSpreadsheet {
         internal static System.Drawing.Bitmap RenameSheet {
             get {
                 object obj = ResourceManager.GetObject("RenameSheet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ResizeAll {
+            get {
+                object obj = ResourceManager.GetObject("ResizeAll", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -346,6 +376,26 @@ namespace PancakeSpreadsheet {
         internal static System.Drawing.Bitmap SheetRange {
             get {
                 object obj = ResourceManager.GetObject("SheetRange", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SimpleRead {
+            get {
+                object obj = ResourceManager.GetObject("SimpleRead", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SimpleWrite {
+            get {
+                object obj = ResourceManager.GetObject("SimpleWrite", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

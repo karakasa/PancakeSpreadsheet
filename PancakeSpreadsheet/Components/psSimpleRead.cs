@@ -9,6 +9,7 @@ using PancakeSpreadsheet.Params;
 using PancakeSpreadsheet.Utility;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -22,7 +23,7 @@ namespace PancakeSpreadsheet.Components
     {
         public override Guid ComponentGuid => new("{286082A8-96E7-45FC-ACCF-66DCF7DDA1DD}");
 
-        protected override string ComponentName => "Simple Read";
+        protected override string ComponentName => "Simple Read XLS";
 
         protected override string ComponentDescription => "One unified component to read a simple xls(x) file.";
 
@@ -102,5 +103,6 @@ namespace PancakeSpreadsheet.Components
 
             base.AfterSolveInstance();
         }
+        protected override Bitmap Icon => ComponentIcons.SimpleRead;
     }
 }

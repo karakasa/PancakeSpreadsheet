@@ -52,6 +52,6 @@ namespace PancakeSpreadsheet.Components
             DA.SetData(0, gooSheet);
         }
 
-        // protected override Bitmap Icon => ComponentIcons.AdjustColumnWidth;
+        protected override Bitmap Icon => ComponentIcons.ResizeAll;
     }
 }
