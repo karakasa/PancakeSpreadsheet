@@ -134,8 +134,17 @@ namespace PancakeSpreadsheet.Components
                             sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
                             break;
                         default:
-                            AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid sheet identifier");
-                            return;
+                            if (sheetId is null)
+                            {
+                                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "A default sheet name is used.");
+                                sheet = holder.Workbook.CreateSheet(DEFAULT_SHEET_NAME);
+                            }
+                            else
+                            {
+                                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Invalid sheet identifier");
+                                return;
+                            }
+                            break;
                     }
                 }
 
