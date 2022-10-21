@@ -49,8 +49,8 @@ namespace PancakeSpreadsheet.Components
 
             DA.GetDataTree<IGH_Goo>(0, out var tree);
             DA.GetData(1, ref rowFirst);
-            DA.GetDataList(2, listRowLabels);
-            DA.GetDataList(3, listColumnLabels);
+            DA.GetDataList(3, listRowLabels);
+            DA.GetDataList(2, listColumnLabels);
 
             var hasRowLabel = listRowLabels.Count > 0;
             var hasColLabel = listColumnLabels.Count > 0;
