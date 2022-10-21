@@ -22,7 +22,7 @@ namespace PancakeSpreadsheet.Components
     {
         public override Guid ComponentGuid => new("{7F7652DF-0286-4F77-ADDF-F4F734D3D298}");
 
-        protected override string ComponentName => "Simple Write List to XLS";
+        protected override string ComponentName => "Simple Write List to XLS(X)";
 
         protected override string ComponentDescription => "One unified component to write a list of cells to a xls(x) file.";
 

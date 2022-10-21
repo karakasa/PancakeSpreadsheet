@@ -23,7 +23,7 @@ namespace PancakeSpreadsheet.Components
     {
         public override Guid ComponentGuid => new("{286082A8-96E7-45FC-ACCF-66DCF7DDA1DD}");
 
-        protected override string ComponentName => "Simple Read XLS";
+        protected override string ComponentName => "Simple Read XLS(X)";
 
         protected override string ComponentDescription => "One unified component to read a xls(x) file.";
 
