@@ -1,6 +1,8 @@
-﻿using Grasshopper.Kernel;
+﻿using Grasshopper;
+using Grasshopper.Kernel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +11,30 @@ namespace PancakeSpreadsheet.PancakeInterop
 {
     internal static class InteropServer
     {
+        private static readonly Lazy<bool> _shouldShowPancakeComponents = new(DetermineShouldShowPancakeComponents);
+        public static bool ShouldShowPancakeComponents => _shouldShowPancakeComponents.Value;
         public static bool IsPancakeAvailable { get; private set; } = false;
         public static void DetectPancakeAssembly()
         {
             LocatePancakeInstallation();
         }
 
+        private static bool DetermineShouldShowPancakeComponents()
+        {
+            const string PancakeFileName = "Pancake.gha";
+
+            if (IsPancakeAvailable)
+                return true;
+
+            foreach (var assemblyFldr in Folders.AssemblyFolders)
+            {
+                var path = Path.Combine(assemblyFldr.Folder, PancakeFileName);
+                if (File.Exists(path))
+                    return true;
+            }
+
+            return false;
+        }
         public static void DetectPancakeAssemblyAfterUiLoaded()
         {
             if (IsPancakeAvailable)

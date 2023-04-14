@@ -12,13 +12,13 @@ namespace PancakeSpreadsheet.Components
     {
         protected GH_Exposure CalculateExposure(GH_Exposure desired)
             => ShouldBeVisible ? desired : GH_Exposure.hidden;
-        protected bool ShouldBeVisible => InteropServer.IsPancakeAvailable;
+        protected bool ShouldBeVisible => InteropServer.ShouldShowPancakeComponents;
 
         protected bool ShouldRunSolveInstance()
         {
             if (!InteropServer.IsPancakeAvailable)
             {
-                AddRuntimeMessage(Grasshopper.Kernel.GH_RuntimeMessageLevel.Error, "This feature requires the core Pancake experience installed.");
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "This feature requires the core Pancake experience installed.");
                 return false;
             }
 
