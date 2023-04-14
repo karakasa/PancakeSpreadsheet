@@ -68,6 +68,10 @@ namespace PancakeSpreadsheet.NpoiInterop
                     index = -1;
                     name = ghString.Value;
                     return IndexNameState.Name;
+                case GooSheet sheet when sheet.Value != null:
+                    index = -1;
+                    name = sheet.Value.SheetName;
+                    return IndexNameState.Name;
             }
 
             index = -1;

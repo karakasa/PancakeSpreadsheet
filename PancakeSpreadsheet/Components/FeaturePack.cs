@@ -74,7 +74,7 @@ namespace PancakeSpreadsheet.Components
             BaseFormulaEvaluator.EvaluateAllFormulaCells(holder.Workbook);
 
             using var fs = new FileStream(filepath, FileMode.Create, FileAccess.Write);
-            holder.Workbook.Write(fs);
+            holder.Workbook.Write(fs, true);
 
             return true;
         }

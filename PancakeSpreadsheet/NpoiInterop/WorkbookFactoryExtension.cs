@@ -101,7 +101,7 @@ namespace NPOI.SS.UserModel
         {
             if (string.IsNullOrEmpty(password))
             {
-                workbook.Write(targetStream);
+                workbook.Write(targetStream, true);
                 return;
             }
         }

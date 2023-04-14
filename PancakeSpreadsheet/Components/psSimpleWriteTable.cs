@@ -71,7 +71,10 @@ namespace PancakeSpreadsheet.Components
             DA.GetData(8, ref ok);
 
             if (!ok)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Wire a True value to the OK input, to write the file.");
                 return;
+            }
 
             var position = writePosition == null ? new SimpleCellReference(0, 0) : writePosition.Value;
 

@@ -65,7 +65,10 @@ namespace PancakeSpreadsheet.Components
             DA.GetData(5, ref ok);
 
             if (!ok)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Wire a True value to the OK input, to read the file.");
                 return;
+            }
 
             var data = SimpleReadData(filepath, password, sheetId, readLoc, rowFirst);
             if (data is not null)

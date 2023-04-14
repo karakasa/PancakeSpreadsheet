@@ -70,7 +70,10 @@ namespace PancakeSpreadsheet.Components
             DA.GetData(7, ref ok);
 
             if (!ok)
+            {
+                AddRuntimeMessage(GH_RuntimeMessageLevel.Remark, "Wire a True value to the OK input, to write the file.");
                 return;
+            }
 
             if(dataList.Count == 0)
             {
