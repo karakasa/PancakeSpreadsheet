@@ -80,9 +80,14 @@ namespace PancakeSpreadsheet.Components
         }
         public GH_Structure<IGH_Goo> ActualReadData(ISheet sheet, SimpleCellRange crange, bool rowFirst, CellTypeHint hint)
         {
+            var tree = new GH_Structure<IGH_Goo>();
+            ActualReadData(sheet, crange, rowFirst, hint, tree, null);
+            return tree;
+        }
+        public void ActualReadData(ISheet sheet, SimpleCellRange crange, bool rowFirst, CellTypeHint hint, GH_Structure<IGH_Goo> tree, GH_Path basePath)
+        {
             var cellPositions = rowFirst ? crange.EnumerateRowFirst() : crange.EnumerateColumnFirst();
 
-            var tree = new GH_Structure<IGH_Goo>();
             var id = 0;
             foreach (var branch in cellPositions)
             {
@@ -114,11 +119,15 @@ namespace PancakeSpreadsheet.Components
                     }
                 }
 
-                tree.EnsurePath(id).AddRange(list);
+                GH_Path curPath;
+                if (basePath is null)
+                    curPath = new GH_Path(id);
+                else
+                    curPath = basePath.AppendElement(id);
+
+                tree.EnsurePath(curPath).AddRange(list);
                 ++id;
             }
-
-            return tree;
         }
 
         public bool TryDecideReadRange(ISheet sheet, IGH_Goo readLoc, out SimpleCellRange crange)
