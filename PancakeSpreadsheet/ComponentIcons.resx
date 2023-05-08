@@ -214,6 +214,9 @@
   <data name="SheetRange" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Icons\IconsDesign-14.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SimpleOpenMultiple" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Icons\IconsDesign_spreadsheet-38.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="SimpleRead" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Icons\IconsDesign_spreadsheet-35.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

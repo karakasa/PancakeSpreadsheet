@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace PancakeSpreadsheet.PancakeInterop
 {
-    internal class AssocWrapper
+    internal sealed class AssocWrapper
     {
-        private object _internalObj;
+        private readonly object _internalObj;
         public List<string> Names { get; private set; }
         public List<object> Values { get; private set; }
         public AssocWrapper()
@@ -61,11 +61,6 @@ namespace PancakeSpreadsheet.PancakeInterop
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
-            return Enumerate().GetEnumerator();
-        }
-
-        private IEnumerable<KeyValuePair<string, object>> Enumerate()
-        {
             for (var i = 0; i < Values.Count; i++)
             {
                 yield return new KeyValuePair<string, object>(
@@ -73,7 +68,6 @@ namespace PancakeSpreadsheet.PancakeInterop
                     Values[i]);
             }
         }
-
         private static string PolishName(string name)
         {
             if (name is null)
