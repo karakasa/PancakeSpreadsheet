@@ -22,7 +22,7 @@ namespace PancakeSpreadsheet.Components
     {
         public override Guid ComponentGuid => new("{286082A8-96E7-45FC-ACCF-66DCF7DDA1EE}");
 
-        protected override string ComponentName => "Simple Read XLS(X) Multiple Sheets";
+        protected override string ComponentName => "Simple Read Multiple Sheets";
 
         protected override string ComponentDescription => "One unified component to read multiple sheets from a xls(x) file.";
 
@@ -156,7 +156,7 @@ namespace PancakeSpreadsheet.Components
 
             base.AfterSolveInstance();
         }
-        protected override Bitmap Icon => ComponentIcons.SimpleRead;
+        protected override Bitmap Icon => ComponentIcons.SimpleOpenMultiple;
     }
 }
 
