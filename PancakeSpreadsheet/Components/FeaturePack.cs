@@ -177,6 +177,14 @@ namespace PancakeSpreadsheet.Components
             firstRowIndex = sheet.FirstRowNum;
             lastRowIndex = sheet.LastRowNum;
 
+            var rowCount = lastRowIndex - firstRowIndex + 1;
+            if (sheet.PhysicalNumberOfRows < rowCount / 8)
+            {
+                // the sheet is very sparse. Might be bugged.
+                GetSheetRangeByEnumeration(sheet, out firstRowIndex, out lastRowIndex, out firstColIndex, out lastColIndex);
+                return;
+            }
+
             firstColIndex = int.MaxValue;
             lastColIndex = int.MinValue;
 
@@ -185,6 +193,36 @@ namespace PancakeSpreadsheet.Components
                 var row = sheet.GetRow(rowIndex);
                 if (row is null)
                     continue;
+
+                if (row.LastCellNum <= row.FirstCellNum || row.LastCellNum == -1 || row.FirstCellNum == -1) continue;
+
+                if (row.FirstCellNum < firstColIndex)
+                    firstColIndex = row.FirstCellNum;
+
+                if (row.LastCellNum - 1 > lastColIndex)
+                    lastColIndex = row.LastCellNum - 1;
+            }
+        }
+        private void GetSheetRangeByEnumeration(ISheet sheet, out int firstRowIndex, out int lastRowIndex, out int firstColIndex, out int lastColIndex)
+        {
+            firstRowIndex = int.MaxValue;
+            lastRowIndex = int.MinValue;
+
+            firstColIndex = int.MaxValue;
+            lastColIndex = int.MinValue;
+
+            var enumerator = sheet.GetRowEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var row = (IRow)enumerator.Current;
+
+                if (row.LastCellNum <= row.FirstCellNum || row.LastCellNum == -1 || row.FirstCellNum == -1) continue;
+
+                var rowIndex = row.RowNum;
+                if (rowIndex < firstRowIndex)
+                    firstRowIndex = rowIndex;
+                if (rowIndex > lastRowIndex)
+                    lastRowIndex = rowIndex;
 
                 if (row.FirstCellNum < firstColIndex)
                     firstColIndex = row.FirstCellNum;

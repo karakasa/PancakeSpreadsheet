@@ -26,7 +26,7 @@ namespace PancakeSpreadsheet.Components
         protected override string ComponentDescription => "One unified component to write a datatree, representing a table, to a xls(x) file.";
 
         protected override string ComponentCategory => PancakeComponent.CategorySpreadsheet;
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {

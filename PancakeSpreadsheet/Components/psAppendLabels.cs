@@ -22,7 +22,7 @@ namespace PancakeSpreadsheet.Components
         protected override string ComponentDescription => "Append row (and/or) column labels onto a tree structure.";
 
         protected override string ComponentCategory => PancakeComponent.CategorySpreadsheet;
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
 
         protected override void RegisterInputParams(GH_InputParamManager pManager)
         {

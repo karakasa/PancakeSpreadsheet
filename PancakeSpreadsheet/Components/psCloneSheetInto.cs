@@ -152,7 +152,7 @@ namespace PancakeSpreadsheet.Components
         }
 
         protected override Bitmap Icon => ComponentIcons.CopySheetInto;
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.secondary;
     }
 }
 

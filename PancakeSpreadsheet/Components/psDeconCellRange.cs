@@ -11,7 +11,7 @@ namespace PancakeSpreadsheet.Components
 {
     public class psDeconCellRange : PancakeComponent
     {
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
         public override Guid ComponentGuid => new Guid("{95C1285A-4512-4D19-AAE9-C6020D97CF68}");
 
         protected override string ComponentName => "Deconstruct Cell Range";

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Grasshopper.Kernel;
+using PancakeSpreadsheet.Utility;
 using Rhino.Geometry;
 
 namespace PancakeSpreadsheet.Components
@@ -32,5 +33,8 @@ namespace PancakeSpreadsheet.Components
         internal const string CategorySheet = "02 | Sheet";
         internal const string CategoryCellContent = "03 | Cell";
         internal const string CategoryCellStyle = "04 | Style";
+
+        public sealed override GH_Exposure Exposure => Config.HideAllComponents ? GH_Exposure.hidden : AnticipatedExposure;
+        protected virtual GH_Exposure AnticipatedExposure => GH_Exposure.primary;
     }
 }

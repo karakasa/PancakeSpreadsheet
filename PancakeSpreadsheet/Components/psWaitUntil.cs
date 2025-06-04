@@ -46,6 +46,6 @@ namespace PancakeSpreadsheet.Components
             get { return new Guid("2d334e87-a1ff-4a8e-85df-c0f5db0bee0a"); }
         }
 
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.secondary;
     }
 }

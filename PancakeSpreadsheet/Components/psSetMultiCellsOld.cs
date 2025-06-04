@@ -76,7 +76,7 @@ namespace PancakeSpreadsheet.Components
         }
         protected override string ComponentCategory => PancakeComponent.CategoryCellContent;
         protected override Bitmap Icon => ComponentIcons.SetCellRange;
-        public override GH_Exposure Exposure => GH_Exposure.hidden;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.hidden;
         public override bool Obsolete => true;
     }
 }

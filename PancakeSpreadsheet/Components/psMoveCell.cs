@@ -110,7 +110,7 @@ namespace PancakeSpreadsheet.Components
 
             return cell;
         }
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
         protected override Bitmap Icon => ComponentIcons.MoveCells;
     }
 }

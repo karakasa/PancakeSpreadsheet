@@ -247,7 +247,7 @@ namespace PancakeSpreadsheet.Components
             if (headers.HasDuplicates())
                 AddRuntimeMessage(GH_RuntimeMessageLevel.Warning, "Duplicated header names found. Later you may access duplicated named values with indexes only.");
         }
-        public override GH_Exposure Exposure => CalculateExposure(GH_Exposure.secondary);
+        protected override GH_Exposure AnticipatedExposure => CalculateExposure(GH_Exposure.secondary);
 
         protected override Bitmap Icon => ComponentIcons.CellToAssoc;
     }

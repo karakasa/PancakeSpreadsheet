@@ -14,7 +14,7 @@ namespace PancakeSpreadsheet.Components
 {
     public class psResizeAllColumns : PancakeComponent
     {
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
         public override Guid ComponentGuid => new("{E0FF0CF3-0A2D-4924-B5E3-179DF57DF1D0}");
 
         protected override string ComponentName => "Resize All Columns";

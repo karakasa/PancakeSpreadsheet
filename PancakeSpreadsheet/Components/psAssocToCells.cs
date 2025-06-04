@@ -233,7 +233,7 @@ namespace PancakeSpreadsheet.Components
         }
         protected override string ComponentCategory => PancakeComponent.CategoryCellContent;
 
-        public override GH_Exposure Exposure => CalculateExposure(GH_Exposure.secondary);
+        protected override GH_Exposure AnticipatedExposure => CalculateExposure(GH_Exposure.secondary);
         protected override Bitmap Icon => ComponentIcons.AssocToCell;
     }
 }

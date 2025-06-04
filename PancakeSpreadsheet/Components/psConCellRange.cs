@@ -49,7 +49,7 @@ namespace PancakeSpreadsheet.Components
             DA.SetData(0, crange.AsGoo());
         }
 
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
         protected override Bitmap Icon => ComponentIcons.ConCRange;
     }
 }

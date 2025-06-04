@@ -14,7 +14,7 @@ namespace PancakeSpreadsheet.Components
 {
     public class psResizeRow : PancakeComponent
     {
-        public override GH_Exposure Exposure => GH_Exposure.tertiary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.tertiary;
         public override Guid ComponentGuid => new("{FCA4CEA6-12D7-40BB-A870-561B538D8717}");
 
         protected override string ComponentName => "Resize Row Height";

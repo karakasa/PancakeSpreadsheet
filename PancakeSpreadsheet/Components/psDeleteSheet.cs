@@ -125,6 +125,6 @@ namespace PancakeSpreadsheet.Components
             DA.SetData(0, goo);
         }
         protected override Bitmap Icon => ComponentIcons.DeleteSheet;
-        public override GH_Exposure Exposure => GH_Exposure.secondary;
+        protected override GH_Exposure AnticipatedExposure => GH_Exposure.secondary;
     }
 }
